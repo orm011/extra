@@ -4,8 +4,7 @@ RUN apt-get update
 RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list
 RUN apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 RUN apt-get update
-RUN apt-get install -y ros-indigo-desktop-full
-RUN apt-get install -y python-rosinstall
+RUN apt-get install -y ros-indigo-desktop
 
 # Replace 1000 with your user / group id
 RUN export uid=1000 gid=1000 && \
@@ -37,16 +36,13 @@ RUN cd /tmp/ && wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux
 WORKDIR /home/developer
 RUN bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b
 RUN echo 'getpath() {  echo $PATH ; }' >> ~/.bashrc
-RUN echo "alias addconda='export PATH=/home/developer/miniconda3/bin/:$(getpath)'" >> ~/.bashrc
+ENV PATH=/home/developer/miniconda3/bin/:$PATH
 
 # emacs
-RUN sudo apt-get install -y emacs
+RUN sudo apt-get install -y emacs24-nox
 ENV EDITOR /usr/bin/emacs
 
 # prepare env for BotDB. assumes you have mounted the ssh keys.
-RUN bash -c 'addconda && conda config --add channels menpo'
+RUN bash -c 'conda config --add channels menpo'
 
 WORKDIR /home/developer
-
-# requires mounting .ssh folder, or you can do it from your host.
-# RUN git clone --recursive git@github.com:spillai/BotDB
